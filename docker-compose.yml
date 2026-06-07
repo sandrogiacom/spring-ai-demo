@@ -1,0 +1,20 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: spring-ai-demo-postgres
+    environment:
+      POSTGRES_DB: spring_ai_demo
+      POSTGRES_USER: spring_ai_demo
+      POSTGRES_PASSWORD: spring_ai_demo
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U spring_ai_demo -d spring_ai_demo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
