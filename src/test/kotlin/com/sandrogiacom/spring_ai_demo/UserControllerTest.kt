@@ -1,6 +1,7 @@
 package com.sandrogiacom.spring_ai_demo
 
 import tools.jackson.databind.ObjectMapper
+import com.sandrogiacom.spring_ai_demo.dto.UserRequest
 import com.sandrogiacom.spring_ai_demo.model.User
 import com.sandrogiacom.spring_ai_demo.repository.UserRepository
 import org.junit.jupiter.api.BeforeEach
@@ -34,15 +35,16 @@ class UserControllerTest {
 
     @Test
     fun `should create a user`() {
-        val user = User(name = "John Doe", email = "john@example.com", password = "password123")
+        val userRequest = UserRequest(name = "John Doe", email = "john@example.com", password = "password123")
 
         mockMvc.post("/api/users") {
             contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(user)
+            content = objectMapper.writeValueAsString(userRequest)
         }.andExpect {
             status { isCreated() }
             jsonPath("$.name") { value("John Doe") }
             jsonPath("$.email") { value("john@example.com") }
+            jsonPath("$.password") { doesNotExist() }
         }
 
         val users = userRepository.findAll()
@@ -89,21 +91,23 @@ class UserControllerTest {
             .andExpect {
                 status { isOk() }
                 jsonPath("$.name") { value("John") }
+                jsonPath("$.password") { doesNotExist() }
             }
     }
 
     @Test
     fun `should update user`() {
         val savedUser = userRepository.save(User(name = "Old Name", email = "old@example.com", password = "pass"))
-        val updatedUser = User(name = "New Name", email = "new@example.com", password = "newpass")
+        val updatedUserRequest = UserRequest(name = "New Name", email = "new@example.com", password = "newpass")
 
         mockMvc.put("/api/users/${savedUser.id}") {
             contentType = MediaType.APPLICATION_JSON
-            content = objectMapper.writeValueAsString(updatedUser)
+            content = objectMapper.writeValueAsString(updatedUserRequest)
         }.andExpect {
             status { isOk() }
             jsonPath("$.name") { value("New Name") }
             jsonPath("$.email") { value("new@example.com") }
+            jsonPath("$.password") { doesNotExist() }
         }
     }
 
