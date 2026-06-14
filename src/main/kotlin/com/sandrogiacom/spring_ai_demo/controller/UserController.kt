@@ -7,7 +7,6 @@ import com.sandrogiacom.spring_ai_demo.dto.toResponse
 import com.sandrogiacom.spring_ai_demo.service.UserService
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.tags.Tag
-import org.springdoc.core.annotations.ParameterObject
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
@@ -21,7 +20,7 @@ class UserController(private val userService: UserService) {
 
     @GetMapping
     @Operation(summary = "Listar todos os usuários com paginação")
-    fun getAllUsers(@ParameterObject pageable: Pageable): Page<UserResponse> =
+    fun getAllUsers(pageable: Pageable): Page<UserResponse> =
         userService.findAll(pageable).map { it.toResponse() }
 
     @GetMapping("/{id}")
@@ -42,7 +41,8 @@ class UserController(private val userService: UserService) {
     @Operation(summary = "Atualizar um usuário existente")
     fun updateUser(@PathVariable id: Long, @RequestBody userRequest: UserRequest): ResponseEntity<UserResponse> {
         val updatedUser = userService.update(id, userRequest.toModel())
-        return if (updatedUser != null) ResponseEntity.ok(updatedUser.toResponse()) else ResponseEntity.notFound().build()
+        return if (updatedUser != null) ResponseEntity.ok(updatedUser.toResponse()) else ResponseEntity.notFound()
+            .build()
     }
 
     @DeleteMapping("/{id}")
